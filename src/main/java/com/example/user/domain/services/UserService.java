@@ -3,17 +3,13 @@ package com.example.user.domain.services;
 import java.util.List;
 import java.util.Optional;
 
-import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.user.domain.exceptions.user.AuthenticationException;
 import com.example.user.domain.exceptions.user.NoUsersToListException;
-import com.example.user.domain.exceptions.user.UserEmailAlreadyExistsException;
 import com.example.user.domain.exceptions.user.UserIdNotFoundException;
-import com.example.user.domain.models.LoginDTO;
 import com.example.user.domain.models.User;
 import com.example.user.domain.models.UserCreateDTO;
 import com.example.user.domain.repositories.UserPagesRepository;
@@ -46,28 +42,30 @@ public class UserService {
         return userPagesRepository.findAll(pageable); 
     }
 
-    public Optional<User> login(LoginDTO data) throws AuthenticationException { // Fazer login de usuário
-        Optional<User> userOptional = userRepository.findByEmail(data.email()); // Verifica se o usuário existe pelo e-mail
+    public Optional<User> login(String nome, Double salario, String experiencia) { // Fazer login de usuário baseado em nome, salário e experiência
+        Optional<User> userOptional = userRepository.findByNomeAndSalarioAndExperiencia(nome, salario, experiencia); // Verifica se o usuário existe pelos dados fornecidos
 
-        if(userOptional.isPresent()) { // Validação do optional
-            User user = userOptional.get(); // Atribui o optional a uma instância de usuário
-            if(!BCrypt.checkpw(data.password(), user.getPassword())) // Valida a senha
-                throw new AuthenticationException("Senha incorreta");
-        } else
-            throw new AuthenticationException("Usuário não encontrado"); // Retorna exception caso o usuário não exista
-
-        return userOptional;
+        if(userOptional.isPresent()) {
+            // O usuário foi encontrado, sem necessidade de senha
+            return userOptional;
+        } else {
+            // Caso o usuário não seja encontrado
+            throw new RuntimeException("Usuário não encontrado com essas credenciais");
+        }
     }
 
     @Transactional
     public User save(@Valid UserCreateDTO data) { // Criação/Registro de usuário
-        Optional<User> userOptional = userRepository.findByEmail(data.email()); // Verifica se o usuário existe pelo e-mail
-        if(userOptional.isPresent())
-            throw new UserEmailAlreadyExistsException("Erro! Já existe um usuário com o mesmo email cadastrado"); // Se já existir um usuário cadastrado com o mesmo e-mail, retorna um exception
+        Optional<User> userOptional = userRepository.findByNomeAndSalarioAndExperiencia(data.nome(), data.salario(), data.experiencia()); // Verifica se o usuário existe com nome, salário e experiência
 
-        User newUser = User.fromDTOWithEncryptedPassword(data); // Cadastra todos os dados do usuário + senha criptografa
+        if(userOptional.isPresent()) {
+            // Se já existir um usuário com essas informações, retorna um erro
+            throw new RuntimeException("Já existe um usuário com o mesmo nome, salário e experiência");
+        }
+
+        User newUser = new User(data); // Cria o novo usuário com os dados recebidos
         
-        return userRepository.save(newUser);
+        return userRepository.save(newUser); // Salva o usuário no banco de dados
     }
 
     public boolean delete(int id) {

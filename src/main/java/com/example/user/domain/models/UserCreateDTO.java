@@ -1,22 +1,17 @@
 package com.example.user.domain.models;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
-// DTO para passar dados para o método de save (registrar novo usuário)
+// DTO para passar dados para o método de login (login do usuário)
 public record UserCreateDTO(
     // Atributos e validação de campos
-    @NotBlank(message = "O campo 'nome' eh obrigatorio!")
+    @NotBlank(message = "O campo 'nome' é obrigatório!")
     String nome,
 
-    @Min(value = 0, message = "A idade nao pode ser negativa!")
-    int idade,
+    @Min(value = 0, message = "O salário não pode ser negativo!")
+    Double salario,  // Alterado de 'idade' para 'salario'
 
-    @Email(message = "O e-mail inserido eh invalido!")
-    @NotBlank(message = "O campo 'email' eh obrigatorio!")
-    String email,
-
-    @NotBlank(message = "O campo 'senha' eh obrigatorio!")
-    String password
+    @NotBlank(message = "O campo 'experiência' é obrigatório!")
+    String experiencia  // Alterado de 'email' para 'experiencia'
 ) {}

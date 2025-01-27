@@ -25,17 +25,16 @@ public class UserController {
         return userRepository.save(user);
     }
 
-    // Endpoint GET para obter informações básicas do usuário (nome e idade)
-    @GetMapping("/{id}")
-    public UserGetResponseDTO getUser(@PathVariable int id) {
-        Optional<User> userOptional = userRepository.findById(id);
+    // Endpoint GET para login de usuário com base no nome, salário e experiência
+    @GetMapping("/login")
+    public User loginUser(@RequestParam String nome, @RequestParam Double salario, @RequestParam String experiencia) {
+        Optional<User> userOptional = userRepository.findByNomeAndSalarioAndExperiencia(nome, salario, experiencia);
 
         if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            // Retorna um DTO com os dados básicos do usuário
-            return new UserGetResponseDTO(user.getNome(), user.getNome());
+            // Retorna o usuário encontrado
+            return userOptional.get();
         } else {
-            throw new RuntimeException("Usuário não encontrado");
+            throw new RuntimeException("Usuário não encontrado com essas credenciais");
         }
     }
 }

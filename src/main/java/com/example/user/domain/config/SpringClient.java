@@ -12,27 +12,29 @@ import com.example.user.domain.models.User;
 
 import reactor.core.publisher.Mono;
 
-@Service // Anotação que indica que esta classe é um serviço Spring, que contém a lógica de negócios da aplicação.
+@Service
 public class SpringClient {
 
-    // Cliente WebClient utilizado para fazer requisições HTTP no contexto do Spring WebFlux.
     private final WebClient webClient;
 
-    // Construtor que inicializa o WebClient com a URL base e um cabeçalho padrão para todas as requisições.
     public SpringClient(@Value("${api.base.url}") String baseUrl) {
         this.webClient = WebClient.builder()
-                .baseUrl(baseUrl) // Define a URL base para as requisições a partir do valor configurado.
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE) // Define o cabeçalho Content-Type para JSON.
-                .build(); // Constrói a instância de WebClient.
+                .baseUrl(baseUrl)
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .build();
     }
 
-    // Método para buscar todos os usuários. Envia um GET request.
-    public Mono<List<User>> getAllUsers() {
-        return webClient.get() // Define o método HTTP como GET.
-                .uri("/user") // Define o endpoint da API para buscar todos os usuários.
-                .retrieve() // Faz a requisição e espera uma resposta.
-                .bodyToFlux(User.class) // Converte o corpo da resposta para um Fluxo de objetos do tipo User.
-                .collectList() // Coleta os elementos do Fluxo em uma Lista.
-                .onErrorMap(throwable -> new RuntimeException("Failed to retrieve users: " + throwable.getMessage())); // Mapeia erros para uma exceção genérica de runtime.
+    // Método para buscar um usuário específico para login com base no nome, salário e experiência.
+    public Mono<User> loginUser(String nome, Double salario, String experiencia) {
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                    .path("/user/login")
+                    .queryParam("nome", nome)  // Envia o nome como parâmetro da query
+                    .queryParam("salario", salario) // Envia o salário como parâmetro da query
+                    .queryParam("experiencia", experiencia) // Envia a experiência como parâmetro da query
+                    .build())
+                .retrieve()
+                .bodyToMono(User.class) // Espera um objeto User como resposta.
+                .onErrorMap(throwable -> new RuntimeException("Login failed: " + throwable.getMessage())); // Tratamento de erros.
     }
 }

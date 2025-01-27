@@ -1,7 +1,5 @@
 package com.example.user.domain.models;
 
-import org.mindrot.jbcrypt.BCrypt;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -27,24 +25,20 @@ public class User {
 
     private String nome;
 
-    private int idade;
+    private Double salario;  // Alterado para 'salario'
 
-    private String email;
-
-    private String password;
+    private String experiencia;  // Alterado para 'experiencia'
 
     // Construtor para inicializar os dados vindos do DTO (create user)
     public User(UserCreateDTO data) {
         this.nome = data.nome();
-        this.idade = data.idade();
-        this.email = data.email();
-        setPassword(data.password());
+        this.salario = data.salario();  // Alterado para 'salario'
+        this.experiencia = data.experiencia();  // Alterado para 'experiencia'
     }
 
-    // Cria um novo usuário com todos os seu dados e senha criptografada
-    public static User fromDTOWithEncryptedPassword(UserCreateDTO data) {
+    // Cria um novo usuário com todos os seus dados
+    public static User fromDTO(UserCreateDTO data) {
         User user = new User(data);
-        user.setPassword(BCrypt.hashpw(data.password(), BCrypt.gensalt()));
         
         return user;
     }

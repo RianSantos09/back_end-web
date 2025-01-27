@@ -1,11 +1,19 @@
 package com.example.user.domain.models;
 
-public class LoginDTO {
+public class UserGetResponseDTO {
     private String nome;
-    private double salario;
+    private Double salario;
     private String experiencia;
 
-    // Construtores, getters e setters
+    // Construtores, Getters e Setters
+
+    public UserGetResponseDTO(String nome, Double salario, String experiencia) {
+        this.nome = nome;
+        this.salario = salario;
+        this.experiencia = experiencia;
+    }
+
+    // Getters e setters
     public String getNome() {
         return nome;
     }
@@ -14,11 +22,11 @@ public class LoginDTO {
         this.nome = nome;
     }
 
-    public double getSalario() {
+    public Double getSalario() {
         return salario;
     }
 
-    public void setSalario(double salario) {
+    public void setSalario(Double salario) {
         this.salario = salario;
     }
 
