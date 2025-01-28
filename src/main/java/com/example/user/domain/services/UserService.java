@@ -43,7 +43,7 @@ public class UserService {
     }
 
     public Optional<User> login(String nome, Double salario, String experiencia) { // Fazer login de usuário baseado em nome, salário e experiência
-        Optional<User> userOptional = userRepository.findByNomeAndSalarioAndExperiencia(nome, salario, experiencia); // Verifica se o usuário existe pelos dados fornecidos
+        List<User> userOptional = userRepository.findByNomeAndSalarioAndExperiencia(nome, salario, experiencia); // Verifica se o usuário existe pelos dados fornecidos
 
         if(userOptional.isPresent()) {
             // O usuário foi encontrado, sem necessidade de senha
@@ -55,15 +55,15 @@ public class UserService {
     }
 
     @Transactional
-    public User save(@Valid UserCreateDTO data) { // Criação/Registro de usuário
-        Optional<User> userOptional = userRepository.findByNomeAndSalarioAndExperiencia(data.nome(), data.salario(), data.experiencia()); // Verifica se o usuário existe com nome, salário e experiência
+    public User save(@Valid User user) { // Criação/Registro de usuário
+        Optional<User> userOptional = userRepository.findByNomeAndSalarioAndExperiencia(user.getNome(), user.getSalario(), user.getExperiencia()); // Verifica se o usuário existe com nome, salário e experiência
 
         if(userOptional.isPresent()) {
             // Se já existir um usuário com essas informações, retorna um erro
             throw new RuntimeException("Já existe um usuário com o mesmo nome, salário e experiência");
         }
 
-        User newUser = new User(data); // Cria o novo usuário com os dados recebidos
+        User newUser = new User(); // Cria o novo usuário com os dados recebidos
         
         return userRepository.save(newUser); // Salva o usuário no banco de dados
     }
@@ -74,5 +74,5 @@ public class UserService {
         userRepository.delete(user); // Deleta da base de dados
 
         return true;
-    }
+    }*/
 }

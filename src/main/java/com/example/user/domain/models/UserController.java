@@ -1,4 +1,4 @@
-package com.example.user.controllers;
+package com.example.user.domain.models;
 
 import com.example.user.domain.models.User;
 import com.example.user.domain.repositories.UserRepository;
@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -28,11 +29,11 @@ public class UserController {
     // Endpoint GET para login de usuário com base no nome, salário e experiência
     @GetMapping("/login")
     public User loginUser(@RequestParam String nome, @RequestParam Double salario, @RequestParam String experiencia) {
-        Optional<User> userOptional = userRepository.findByNomeAndSalarioAndExperiencia(nome, salario, experiencia);
-
+         List<User> userOptional = findByNomeAndSalarioAndExperiencia(nome, salario, experiencia);
+         
         if (userOptional.isPresent()) {
             // Retorna o usuário encontrado
-            return userOptional.get();
+            return userOptional.get(0);
         } else {
             throw new RuntimeException("Usuário não encontrado com essas credenciais");
         }

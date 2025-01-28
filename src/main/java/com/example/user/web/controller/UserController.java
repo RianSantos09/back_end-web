@@ -1,3 +1,4 @@
+
 package com.example.user.web.controller;
 
 import java.util.List;
@@ -5,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.user.domain.exceptions.user.AuthenticationException;
@@ -25,6 +29,9 @@ import com.example.user.infrastructure.mappers.UserMapper;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+
+
 
 @RestController
 @RequestMapping("/user")
@@ -84,6 +91,23 @@ public class UserController {
             return ResponseEntity.ok("Usuário de Id: " + id + " foi deletado com sucesso!");
         } else {
             return ResponseEntity.notFound().build();
+        }
+    }
+     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public User createUser(@RequestBody UserCreateDTO userCreateDTO) {
+        User user = User.fromDTOWithEncryptedPassword(userCreateDTO);
+        return userRepository.save(user);
+    }
+
+    @GetMapping("/login")
+    public User loginUser(@RequestParam String nome, @RequestParam Double salario, @RequestParam int experiencia) {
+        Optional<User> userOptional = userRepository.findByNomeAndSalarioAndExperiencia(nome, salario, experiencia);
+
+        if (userOptional.isPresent()) {
+            return userOptional.get();
+        } else {
+            throw new RuntimeException("Usuário não encontrado com essas credenciais");
         }
     }
     
