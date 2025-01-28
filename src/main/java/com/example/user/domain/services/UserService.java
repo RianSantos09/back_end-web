@@ -26,7 +26,7 @@ public class UserService {
     private final UserPagesRepository userPagesRepository;
 
     public User findById(int id) { // Obter o usuário pelo Id dele
-        return userRepository.findById(id).orElseThrow(() -> new UserIdNotFoundException("Usuário de Id: " + id + " não foi encontrado!")); // Busca no repositório, se não encontrar, retorna uma exception customizada
+        return userRepository.findById((long) id).orElseThrow(() -> new UserIdNotFoundException("Usuário de Id: " + id + " não foi encontrado!")); // Busca no repositório, se não encontrar, retorna uma exception customizada
     }
 
     public List<User> findAll() { // Obter todos os usuários 

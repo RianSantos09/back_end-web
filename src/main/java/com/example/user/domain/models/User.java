@@ -29,17 +29,10 @@ public class User {
 
     private String experiencia;  // Alterado para 'experiencia'
 
-    // Construtor para inicializar os dados vindos do DTO (create user)
-    public User(UserCreateDTO data) {
-        this.nome = data.nome();
-        this.salario = data.salario();  // Alterado para 'salario'
-        this.experiencia = data.experiencia();  // Alterado para 'experiencia'
+    public static User fromDTOWithEncryptedPassword(UserCreateDTO userCreateDTO) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'fromDTOWithEncryptedPassword'");
     }
 
-    // Cria um novo usuário com todos os seus dados
-    public static User fromDTO(UserCreateDTO data) {
-        User user = new User(data);
-        
-        return user;
-    }
+
 }
