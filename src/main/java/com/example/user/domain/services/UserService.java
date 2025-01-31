@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.user.domain.exceptions.user.NoUsersToListException;
 import com.example.user.domain.exceptions.user.UserIdNotFoundException;
 import com.example.user.domain.models.User;
-import com.example.user.domain.models.UserCreateDTO;
 import com.example.user.domain.repositories.UserPagesRepository;
 import com.example.user.domain.repositories.UserRepository;
 
@@ -42,37 +41,34 @@ public class UserService {
         return userPagesRepository.findAll(pageable); 
     }
 
-    public Optional<User> login(String nome, Double salario, String experiencia) { // Fazer login de usuário baseado em nome, salário e experiência
-        List<User> userOptional = userRepository.findByNomeAndSalarioAndExperiencia(nome, salario, experiencia); // Verifica se o usuário existe pelos dados fornecidos
+public Optional<User> login(String nome, Double salario, String experiencia) {
+    List<User> users = userRepository.findByNomeAndSalarioAndExperiencia(nome, salario, experiencia);
 
-        if(userOptional.isPresent()) {
-            // O usuário foi encontrado, sem necessidade de senha
-            return userOptional;
-        } else {
-            // Caso o usuário não seja encontrado
-            throw new RuntimeException("Usuário não encontrado com essas credenciais");
-        }
+    if (!users.isEmpty()) {
+        // Retorna o primeiro usuário da lista
+        return Optional.of(users.get(0));
+    } else {
+        // Caso o usuário não seja encontrado
+        throw new RuntimeException("Usuário não encontrado com essas credenciais");
+    }
+}
+
+@Transactional
+public User save(@Valid User user) {
+    List<User> users = userRepository.findByNomeAndSalarioAndExperiencia(user.getNome(), user.getSalario(), user.getExperiencia());
+
+    if (!users.isEmpty()) {
+        // Se já existir um usuário com essas informações, retorna um erro
+        throw new RuntimeException("Já existe um usuário com o mesmo nome, salário e experiência");
     }
 
-    @Transactional
-    public User save(@Valid User user) { // Criação/Registro de usuário
-        Optional<User> userOptional = userRepository.findByNomeAndSalarioAndExperiencia(user.getNome(), user.getSalario(), user.getExperiencia()); // Verifica se o usuário existe com nome, salário e experiência
+    User newUser = new User(); // Cria o novo usuário com os dados recebidos
+    return userRepository.save(newUser); // Salva o usuário no banco de dados
+}
 
-        if(userOptional.isPresent()) {
-            // Se já existir um usuário com essas informações, retorna um erro
-            throw new RuntimeException("Já existe um usuário com o mesmo nome, salário e experiência");
-        }
-
-        User newUser = new User(); // Cria o novo usuário com os dados recebidos
-        
-        return userRepository.save(newUser); // Salva o usuário no banco de dados
-    }
-
-    public boolean delete(int id) {
-        User user = findById(id); // Verifica se o usuário existe pelo seu Id
-
-        userRepository.delete(user); // Deleta da base de dados
-
-        return true;
-    }*/
+public boolean delete(int id) {
+    User user = findById(id); // Verifica se o usuário existe pelo seu Id
+    userRepository.delete(user); // Deleta da base de dados
+    return true;
+}
 }

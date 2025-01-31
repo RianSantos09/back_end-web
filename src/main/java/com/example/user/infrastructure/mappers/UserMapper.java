@@ -4,7 +4,10 @@ import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 import com.example.user.domain.models.User;
+import com.example.user.domain.models.UserCreateDTO;
 import com.example.user.domain.models.UserGetResponseDTO;
+
+import jakarta.validation.Valid;
 
 @Mapper
 public interface UserMapper {
@@ -13,4 +16,7 @@ public interface UserMapper {
 
     // Método que define a conversão de um objeto User para um UserGetResponseDTO.
     UserGetResponseDTO userToUserGetResponseDTO(User user);
+
+    @Valid
+    User userCreateDTOToUser(UserCreateDTO data);
 }
